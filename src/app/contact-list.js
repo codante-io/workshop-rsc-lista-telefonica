@@ -1,6 +1,18 @@
-import contacts from '../db/contacts'
+import SearchInput from './search-input';
 
-export default async function ContactList() {
+const { PrismaClient } = require('@prisma/client');
+
+export default async function ContactList({searchParams}) {
+  const prisma = new PrismaClient();
+  const contacts = await prisma.contact.findMany(
+    {
+      where: {
+        name: {
+          contains: searchParams.search || '',
+        }
+      }
+    }
+  );
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
@@ -11,6 +23,7 @@ export default async function ContactList() {
           </h1>
         </div>
       </div>
+      <SearchInput search={searchParams.search} />
       <div className="flow-root mt-8">
         <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
